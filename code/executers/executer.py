@@ -1,28 +1,41 @@
 import io
 import sys
 
+from statistics.timer import Timer
 
 class Executer:
-	def __init__(self, heuristic = None, sequence = None, queries = None):
-		self.heuristic = heuristic
+	def __init__(self, heuristics = None, sequence = None, queries = None):
+		self.heuristics = heuristics
 		self.sequence = sequence
 		self.queries = queries
+		self.timer = Timer()
 
 	def execute(self):
-		if self.heuristic is None:
+		for heuristic in self.heuristics:
+			self._execute(heuristic)
+
+	def _execute(self, heuristic = None, verbose = True):
+		if heuristic is None:
 			print >>sys.stderr, "Nao ha heuristica a ser executada."
 			return False	
 		if self.sequence is None or self.queries is None:
 			print >>sys.stderr, "Sequencia ou pesquisas nao informada."
 			return False
-		print "Executando heuristica ", self.heuristic, "..."
+		print "Executando heuristica ", heuristic, "..."
 		print "Sequencia de entrada ", self.sequence
-		self.heuristic.preprocess(self.sequence)
+		if verbose:
+			self.timer.start()
+			heuristic.preprocess(self.sequence)
+			self.timer.end()
+			print "Pre-processamento levou %s segundos." % self.timer.elapsed()
 		print "-------------------------"
 		for query in self.queries:
 			print "Pesquisa: ", query
-			answers = self.heuristic.query(query)
+			self.timer.start()
+			answers = heuristic.query(query)
+			self.timer.end()
 			print answers
+			print str(self.timer.elapsed()) + " segundos"
 			print ""
 
 	def _parse_line(self, line):
