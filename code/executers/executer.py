@@ -10,7 +10,10 @@ class Executer:
 		self.queries = queries
 		self.timer = Timer()
 
-	def execute(self):
+	def execute(self, heuristics = None):
+		if heuristics is not None:
+			self.heuristics = heuristics
+
 		for heuristic in self.heuristics:
 			self._execute(heuristic)
 
