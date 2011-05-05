@@ -25,22 +25,32 @@ class Executer:
 			print >>sys.stderr, "Sequencia ou pesquisas nao informada."
 			return False
 		print "Executando heuristica ", heuristic, "..."
-		print "Sequencia de entrada ", self.sequence
+		
+		if len(self.sequence) <= 10:	
+			print "Sequencia de entrada ", self.sequence
+		else:
+			print "Sequencia de entrada com %d elementos, alguns deles:"%len(self.sequence)
+			print self.sequence[0:5] + ["..."] + self.sequence[-5:]
+			print ""
 		if verbose:
 			self.timer.start()
 			heuristic.preprocess(self.sequence)
 			self.timer.end()
-			print "Pre-processamento levou %s segundos." % self.timer.elapsed()
+			print "Pre-processamento levou %s ms" % self.timer.elapsed()
+			print "Tamanho da estrutura: %s"%heuristic.preprocess_size()
 		print "-------------------------"
+		total_query_time = 0	
 		for query in self.queries:
 			print "Pesquisa: ", query
 			self.timer.start()
 			answers = heuristic.query(query)
 			self.timer.end()
 			print answers
-			print str(self.timer.elapsed()) + " segundos"
+			print str(self.timer.elapsed()) + " microseconds"
+			total_query_time += self.timer.elapsed()
 			print ""
-
+		print "=========================="
+		print "accumulated query time: ", total_query_time, " microseconds"
 	def _parse_line(self, line):
 		raise NotImplemented 
 
@@ -84,4 +94,3 @@ class Executer:
 			return False
 		self.sequence = sequence
 		self.queries = queries
-
