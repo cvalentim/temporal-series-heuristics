@@ -3,11 +3,11 @@ import sys
 """
 Implements a tree data structure.
 
-Each vertex is a instance of class Node.
+Each vertex is an instance of Node.
 The tree is build by passing the edges 
 (pairs of external nodes ids) to the method add_edge. 
 Initialy the tree is unrooted but at any moment one
-can call the method set_root passing a id and that way
+can call the method set_root passing a id and thus
 rooting the tree.
 """
 
