@@ -11,7 +11,7 @@ can call the method set_root passing a id and thus
 rooting the tree.
 """
 
-from heuristics.node import Node
+from heuristics.node import Node, BinaryNode
 
 class Tree:
 	def __init__(self):
@@ -70,3 +70,57 @@ class Tree:
 		if u_id == -1:
 			return None
 		return self.nodes[u_id]	
+
+class BinaryTree:
+	def __init__(self):
+		self.m_id = {} # maps an external id to an internal
+		self.nodes = [] # list of tree nodes
+		self.root_id = -1
+
+	def _get_or_add_id(self, u):
+		if self.m_id.has_key(u):
+			return  self.m_id[u]
+		else:
+			id_u = len(self.m_id)
+			new_node = BinaryNode(_id = u, value = -1)
+			self.nodes.append(new_node)
+			self.m_id[u] = id_u
+			return id_u
+
+	def _get_id(self, u):
+		if self.m_id.has_key(u):
+			return self.m_id[u]
+		return -1
+	
+	def add_left_edge(self, u, v):
+		id_u = self._get_or_add_id(u)
+		id_v = self._get_or_add_id(v)
+		node_u = self.nodes[id_u]
+		node_v = self.nodes[id_v]
+		self.nodes[id_u].left = node_v
+		node_v.parent = node_u
+
+	def add_right_edge(self, u, v):
+		id_u = self._get_or_add_id(u)
+		id_v = self._get_or_add_id(v)
+		node_u = self.nodes[id_u]
+		node_v = self.nodes[id_v]
+		self.nodes[id_u].right = node_v
+		node_v.parent = node_u
+
+	def add_node(self, u, value = -1):
+		id_u = self._get_or_add_id(u)
+		self.nodes[id_u].value = value
+		return self.nodes[id_u]
+
+	def get_root(self):
+		if self.root_id == -1:
+			return None
+		return self.nodes[self.root_id]
+	
+	def set_root(self, u):
+		self.root_id = u
+
+	def size(self):
+		return len(self.m_id)
+
