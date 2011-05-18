@@ -1,17 +1,17 @@
 import random
 import unittest
 
-from heuristics.rmq import RMQ
+from heuristics.rmq_linear import RMQLinear
 
-class TestRMQ(unittest.TestCase):
+class TestRMQLinear(unittest.TestCase):
 	def setUp(self):
-		self.rmq = RMQ()
+		self.rmq = RMQLinear()
 
 	def test_one_sequence(self):
 		self.rmq.preprocess([2])
 		# testando se ha lixo entre pesquisas
 		self.assertEqual(self.rmq.query(0, 0), 0)	
-
+	
 	def test_two_sequence(self):
 		self.rmq.preprocess([3, 1])
 		self.assertEqual(self.rmq.query(0, 1), 1)
@@ -34,7 +34,7 @@ class TestRMQ(unittest.TestCase):
 		self.assertEqual(self.rmq.query(1, 2), 1)
 		self.assertEqual(self.rmq.query(1, 1), 1)
 		self.assertEqual(self.rmq.query(2, 2), 2)
-
+	
 	def test_random_sequence(self):
 		import random
 		for test in xrange(100):
@@ -52,5 +52,5 @@ class TestRMQ(unittest.TestCase):
 						smaller_id = j
 					self.assertEqual(self.rmq.query(i, j), smaller_id)
 
-suite = unittest.TestLoader().loadTestsFromTestCase(TestRMQ)
+suite = unittest.TestLoader().loadTestsFromTestCase(TestRMQLinear)
 unittest.TextTestRunner(verbosity = 2).run(suite)

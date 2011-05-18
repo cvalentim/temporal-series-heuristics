@@ -1,6 +1,9 @@
 import math
 
-class RMQ:
+"""
+Sparse table RMQ implementation.
+"""
+class RMQSt:
 	def __init__(self):
 		pass
 
