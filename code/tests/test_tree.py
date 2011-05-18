@@ -22,7 +22,7 @@ class TestTree(unittest.TestCase):
 		self.tree.add_edge(10, 1)
 		self.assertEqual(self.tree.set_root(40), -1)
 		self.assertEqual(self.tree.set_root(10), 10)
-		self.assertNotEquals(self.tree.get_root(), None)
+		self.assertFalse(self.tree.get_root() is None)
 
 	def test_tree_with_3_nodes(self):
 		self.tree.add_edge(1, 7)

@@ -41,6 +41,7 @@ class RMQRestrict:
 		self.b_size = int(math.log(self.n, 2)/2) + 1
 
 		self.blocks = [] # list of minimums for each block of size b_size
+		self.where = [] # keeps the index of the minimum of the block
 		self.blocks_ids = {}
 		self.norm_b = []
 		self.b_unique = [] # keeps a map between block position
@@ -48,23 +49,30 @@ class RMQRestrict:
 
 		smaller = A[0]
 		block = [A[0]]
+		smaller_id = 0
 
 		for i in xrange(1, self.n):
 			if len(block) == self.b_size:
 				self.blocks.append(smaller)
+				self.where.append(smaller_id)
 				b_id = self.preprocess_blocks(block)
 				self.b_unique.append(b_id)
 				block = [A[i]]
 				smaller = A[i]
+				smaller_id = i
 			else:
 				block.append(A[i])
-				smaller = min(smaller, A[i])
+				if smaller > A[i]:
+					smaller = A[i]
+					smaller_id = i
 
 		self.blocks.append(smaller)
+		self.where.append(smaller_id)
 		b_id = self.preprocess_blocks(block)
 		self.b_unique.append(b_id)
 
 		assert len(self.blocks) == (self.n - 1)/self.b_size + 1
+		assert len(self.blocks) == len(self.where)
 		self.rmq_st = RMQSt()
 		self.rmq_st.preprocess(self.blocks)
 
@@ -80,10 +88,12 @@ class RMQRestrict:
 
 		# WARNING: change me later, ineficient
 		if block_i != block_j:
-			ans = self.A[i]
+			ans_value = self.A[i]
+			ans_index = i
 			if block_i + 1 <  block_j:
-				ans_id = self.rmq_st.query(block_i + 1, block_j - 1)
-				ans = self.blocks[ans_id]
+				bid = self.rmq_st.query(block_i + 1, block_j - 1)
+				ans_value = self.blocks[bid]
+				ans_index = self.where[bid]
 			
 			id_bi = self.b_unique[block_i]
 			id_bj = self.b_unique[block_j]	
@@ -94,12 +104,17 @@ class RMQRestrict:
 			id_min_in_bj = block_j * self.b_size + \
 							self.norm_b[id_bj][0, index_j]
 			
-			ans = min(ans, self.A[id_min_in_bi])
-			ans = min(ans, self.A[id_min_in_bj])
+			if self.A[id_min_in_bi] < ans_value:
+				ans_value = self.A[id_min_in_bi]
+				ans_index = id_min_in_bi
 
-			return ans
+			if self.A[id_min_in_bj] < ans_value:
+				ans_value = self.A[id_min_in_bj]
+				ans_index = id_min_in_bj
+
+			return ans_index
 		else:
 			b_id = self.b_unique[block_i]
 			id_min = block_i * self.b_size + \
 					self.norm_b[b_id][index_i, index_j]
-			return self.A[id_min]
+			return id_min
