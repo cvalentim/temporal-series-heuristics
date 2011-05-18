@@ -1,11 +1,11 @@
 import random
 import unittest
 
-from heuristics.rmq import RMQ
+from heuristics.rmq_linear import RMQLinear
 
 class TestRMQ(unittest.TestCase):
 	def setUp(self):
-		self.rmq = RMQ()
+		self.rmq = RMQLinear()
 
 	def test_one_sequence(self):
 		self.rmq.preprocess([2])

@@ -1,4 +1,5 @@
-import math
+from heuristics.lca import LCA
+from heuristics.tree import BinaryTree
 
 class RMQ:
 	def __init__(self):
@@ -6,24 +7,26 @@ class RMQ:
 
 	def preprocess(self, A):
 		n = len(A)
-		k = int(math.log(n, 2))
-		self.PD = [[-1]*(k + 1) for x in xrange(n)]
-		self.ID = [[-1]*(k + 1) for x in xrange(n)]
-		for i in xrange(n):
-			self.PD[i][0] = A[i]
-			self.ID[i][0] = i
-		for delta in xrange(1, k + 1):
-			for i in xrange(n):
-				self.PD[i][delta] = self.PD[i][delta - 1]
-				self.ID[i][delta] = self.ID[i][delta - 1]
-				if i + 2**(delta - 1) < n:
-					if self.PD[i][delta] > self.PD[i + 2**(delta-1)][delta-1]:
-						self.PD[i][delta] = self.PD[i + 2**(delta-1)][delta-1]
-						self.ID[i][delta] = self.ID[i + 2**(delta-1)][delta-1]
+		self.tree = BinaryTree() # cartesian tree
+		# the preprocessing constructs a cartesian tree for the sequence
+		last_at_right = self.tree.add_node(0, A[0])
+		self.tree.set_root(0)
+		for i in xrange(1, n):
+			to_fix = self.tree.add_node(i, A[i])
+			while True:
+				if last_at_right is None or last_at_right < to_fix:
+					break
+				last_at_right = last_at_right.parent
+			if last_at_right is None:
+				self.tree.add_left_edge(to_fix._id, self.tree.get_root()._id)
+				self.tree.set_root(to_fix._id)
+			else:
+				if last_at_right.right:
+					self.tree.add_left_edge(to_fix._id, last_at_right.right._id)
+				self.tree.add_right_edge(last_at_right._id, to_fix._id)
+			last_at_right = to_fix
+		self.lca = LCA()
+		self.lca.preprocess(self.tree)
 
 	def query(self, i, j):
-		k = int(math.log(j - i + 1, 2))
-		if self.PD[i][k] <= self.PD[j - 2**k + 1][k]:
-			return self.ID[i][k]
-		else:
-			return self.ID[j - 2**k + 1][k]
+		return self.lca.query(i, j)

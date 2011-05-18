@@ -1,5 +1,5 @@
 import sys
-from heuristics.rmq import RMQ
+from heuristics.rmq_restrict import RMQRestrict
 
 class LCA:
 	def __init__(self):
@@ -34,7 +34,7 @@ class LCA:
 		for i in xrange(len(self.E)):
 			if not self.R.has_key(self.E[i]):
 				self.R[self.E[i]] = i
-		self.rmq = RMQ()
+		self.rmq = RMQRestrict()
 		self.rmq.preprocess(self.L)
 		return True
 
